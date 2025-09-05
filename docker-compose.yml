@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: vegetable-mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_DATABASE: vegetable_order_app
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  vegetable-app:
+    build: .
+    container_name: vegetable-app
+    restart: always
+    ports:
+      - "3000:3000"   # maps container port 3000 to host port 3000
+    environment:
+      PORT: 3000
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_NAME: vegetable_order_app
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+volumes:
+  mongo-data:
